@@ -26,8 +26,14 @@ GPU_MEMORY_UTILIZATION="${GPU_MEMORY_UTILIZATION:-0.25}"
 MAX_NUM_SEQS="${MAX_NUM_SEQS:-16}"
 MAX_NUM_BATCHED_TOKENS="${MAX_NUM_BATCHED_TOKENS:-16384}"
 
-export HF_HOME="${HF_HOME:-$PROJECT_DIR/.cache/huggingface}"
-export HUGGINGFACE_HUB_CACHE="${HUGGINGFACE_HUB_CACHE:-$HF_HOME/hub}"
+# Par défaut, Hugging Face utilise son cache standard (~/.cache/huggingface).
+# Définis HF_HOME ou HUGGINGFACE_HUB_CACHE dans .env uniquement pour le surcharger.
+if [[ -n "${HF_HOME:-}" ]]; then
+  export HF_HOME
+fi
+if [[ -n "${HUGGINGFACE_HUB_CACHE:-}" ]]; then
+  export HUGGINGFACE_HUB_CACHE
+fi
 export HF_HUB_ENABLE_HF_TRANSFER="${HF_HUB_ENABLE_HF_TRANSFER:-1}"
 export TOKENIZERS_PARALLELISM="${TOKENIZERS_PARALLELISM:-false}"
 
