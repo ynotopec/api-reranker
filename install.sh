@@ -7,11 +7,14 @@ VENV_DIR="${VENV_DIR:-$HOME/venv/$PROJECT_NAME}"
 
 VLLM_VERSION="${VLLM_VERSION:-0.19.1}"
 CUDA_VERSION="${CUDA_VERSION:-130}"
+PYTHON_VERSION="${PYTHON_VERSION:-3.12}"
+HUGGINGFACE_HUB_VERSION_SPEC="${HUGGINGFACE_HUB_VERSION_SPEC:-huggingface-hub[cli]>=0.34.0,<1.0}"
 
 echo "==> Project:      $PROJECT_DIR"
 echo "==> Project name: $PROJECT_NAME"
 echo "==> Venv:         $VENV_DIR"
 echo "==> vLLM:         $VLLM_VERSION + cu$CUDA_VERSION"
+echo "==> Python:       $PYTHON_VERSION"
 
 need_cmd() {
   command -v "$1" >/dev/null 2>&1
@@ -68,7 +71,7 @@ echo "==> Wheel:        $VLLM_WHEEL"
 mkdir -p "$(dirname "$VENV_DIR")"
 
 echo "==> Creating/upgrading venv..."
-uv venv "$VENV_DIR" --python 3.11
+uv venv "$VENV_DIR" --python "$PYTHON_VERSION"
 
 # shellcheck disable=SC1091
 source "$VENV_DIR/bin/activate"
@@ -91,7 +94,7 @@ uv pip install -U \
 
 echo "==> Installing helper packages..."
 uv pip install -U \
-  "huggingface_hub[cli]" \
+  "$HUGGINGFACE_HUB_VERSION_SPEC" \
   hf_transfer \
   requests
 
@@ -108,6 +111,8 @@ packages = [
     "nvidia-cutlass-dsl-libs-base",
     "flashinfer-python",
     "flashinfer-jit-cache",
+    "huggingface-hub",
+    "transformers",
 ]
 
 for pkg in packages:

@@ -12,7 +12,7 @@ cp .env.example .env
 nano .env
 ````
 
-Le venv est créé automatiquement dans :
+Le venv Python 3.12 est créé automatiquement dans :
 
 ```bash
 ~/venv/<basename project dir>
@@ -58,6 +58,24 @@ curl -s http://127.0.0.1:8000/score \
     ]
   }' | jq
 ```
+
+## Python, dépendances Transformers et cache Hugging Face
+
+`install.sh` crée le venv avec Python 3.12 par défaut :
+
+```bash
+uv venv "$VENV_DIR" --python 3.12
+```
+
+Pour éviter l’erreur `huggingface-hub>=0.34.0,<1.0 is required ... but found huggingface-hub==1.26.0`, le script installe `huggingface-hub[cli]>=0.34.0,<1.0`, compatible avec `transformers`.
+
+`run.sh` ne force plus de cache Hugging Face local au projet. Sans variable `HF_HOME` ou `HUGGINGFACE_HUB_CACHE`, Hugging Face utilise son répertoire par défaut :
+
+```bash
+~/.cache/huggingface
+```
+
+Tu peux toujours surcharger ce chemin dans `.env` si nécessaire.
 
 ## Réglage mémoire
 
