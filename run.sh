@@ -16,7 +16,8 @@ if [[ -f "$PROJECT_DIR/.env" ]]; then
 fi
 
 MODEL_ID="${MODEL_ID:-BAAI/bge-reranker-v2-m3}"
-SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-$MODEL_ID}"
+SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-}"
+MODEL_ALIAS="${MODEL_ALIAS:-}"
 
 API_KEY="${API_KEY:-}"
 
@@ -54,7 +55,6 @@ ARGS=(
   --host "$HOST"
   --port "$PORT"
   --runner pooling
-  --served-model-name "$SERVED_MODEL_NAME"
   --dtype "$DTYPE"
   --max-model-len "$MAX_MODEL_LEN"
   --gpu-memory-utilization "$GPU_MEMORY_UTILIZATION"
@@ -62,6 +62,14 @@ ARGS=(
   --max-num-batched-tokens "$MAX_NUM_BATCHED_TOKENS"
   --trust-remote-code
 )
+
+if [[ -n "$SERVED_MODEL_NAME" || -n "$MODEL_ALIAS" ]]; then
+  SERVED_MODEL_NAMES=("${SERVED_MODEL_NAME:-$MODEL_ID}")
+  if [[ -n "$MODEL_ALIAS" && "$MODEL_ALIAS" != "${SERVED_MODEL_NAMES[0]}" ]]; then
+    SERVED_MODEL_NAMES+=("$MODEL_ALIAS")
+  fi
+  ARGS+=(--served-model-name "${SERVED_MODEL_NAMES[@]}")
+fi
 
 if [[ -n "$API_KEY" ]]; then
   ARGS+=(--api-key "$API_KEY")
@@ -79,7 +87,12 @@ echo "==> Starting vLLM reranker"
 echo "    project: $PROJECT_NAME"
 echo "    venv:    $VENV_DIR"
 echo "    model:   $MODEL_ID"
-echo "    name:    $SERVED_MODEL_NAME"
+if [[ -n "$SERVED_MODEL_NAME" ]]; then
+  echo "    name:    $SERVED_MODEL_NAME"
+fi
+if [[ -n "$MODEL_ALIAS" ]]; then
+  echo "    alias:   $MODEL_ALIAS"
+fi
 echo "    url:     http://$HOST:$PORT"
 echo "    api:     POST /score"
 echo "    mem:     GPU_MEMORY_UTILIZATION=$GPU_MEMORY_UTILIZATION"
