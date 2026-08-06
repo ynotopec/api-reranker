@@ -37,6 +37,35 @@ ou :
 ./run.sh 0.0.0.0 8000
 ```
 
+## Nom servi et alias optionnels du modèle
+
+Les trois variables ont des rôles distincts :
+
+- `MODEL_ID` indique le modèle à charger ;
+- `SERVED_MODEL_NAME` change, de manière optionnelle, son nom principal dans l’API ;
+- `MODEL_ALIAS` ajoute, de manière optionnelle, un second nom accepté par l’API.
+
+Tu peux donc définir le nom servi et son alias dans `.env` :
+
+```dotenv
+MODEL_ID=BAAI/bge-reranker-v2-m3
+SERVED_MODEL_NAME=bge-reranker-v2-m3
+MODEL_ALIAS=reranker
+```
+
+Le modèle chargé reste celui indiqué par `MODEL_ID`. Les requêtes peuvent utiliser le
+nom principal ou l’alias :
+
+```json
+{
+  "model": "reranker"
+}
+```
+
+Si seul `MODEL_ALIAS` est défini, `MODEL_ID` reste le nom principal et l’alias est
+ajouté. Si les deux options sont absentes ou vides, vLLM utilise directement
+`MODEL_ID`.
+
 ## Test santé
 
 ```bash
